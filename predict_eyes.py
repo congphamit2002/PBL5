@@ -6,31 +6,29 @@ import time
 import dlib
 import cv2
 
-# khởi tạo đối số
-ap = argparse.ArgumentParser()
-ap.add_argument("-p", "--shape-predictor", required=True,
-	help="path to facial landmark predictor")
-args = vars(ap.parse_args())
-
 #khởi tạo dò tìm khuôn mặt và tải model dự đoán
 print("[INFO] loading facial landmark predictor and eye predictor...")
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor(args["shape_predictor"])
+predictor = dlib.shape_predictor('D:/Hoc_Tap/Ki2_Nam3/PBL5/code/eye_predictor.dat')
 
 # khởi tạo luồng đọc video
 print("[INFO] loading camera...")
-vs = VideoStream(src=0).start()
-time.sleep(2.0)
+vs = cv2.VideoCapture('D:/Hoc_Tap/Ki2_Nam3/PBL5/Video/409252317403603954.mp4')
 
+count = 0
 # lặp qua các frames từ video stream
 while True:
 	#lấy khung , resize về chiều rộng 400pixel chuyển sanh ảnh xám
-	frame = vs.read()
+	ret, frame = vs.read()
 	frame = imutils.resize(frame, width=400)
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	
   # detect khuôn mặt theo ảnh xám
+	count += 1
 	rects = detector(gray, 0)
+	print(len(rects))
+	if len(rects) == 0:
+		cv2.imwrite('D:/Hoc_Tap/Ki2_Nam3/PBL5/code/image_error/{}.jpg'.format(count), gray)
 
   # lặp qua khuôn mặt đã detect 
 	for rect in rects:
